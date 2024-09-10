@@ -1,0 +1,19 @@
+-arg "-w -notation-overridden"
+-arg "-w -extraction-reserved-identifier"
+-arg "-w -extraction-opaque-accessed"
+-arg "-w -ambiguous-paths"
+-arg "-w -duplicate-clear"
+-arg "-w +deprecated-hint-without-locality"
+-arg "-w +deprecated-hint-rewrite-without-locality"
+-arg "-w +deprecated-instance-without-locality"
+-arg "-w -hiding-delimiting-key"
+
+-R proofs koka_coq
+
+proofs/lib/Coqlib.v
+proofs/lib/Maps.v
+proofs/lib/Zbits.v
+proofs/lib/Integers.v
+proofs/common/AST.v
+proofs/lang/types.v
+proofs/lang/expr.v
