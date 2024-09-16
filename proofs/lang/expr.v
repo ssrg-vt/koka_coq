@@ -3,49 +3,60 @@ Require Import String ZArith Coq.FSets.FMapAVL Coq.Structures.OrderedTypeEx.
 Require Import Coq.FSets.FSetProperties Coq.FSets.FMapFacts FMaps FSetAVL Nat PeanoNat.
 Require Import Coq.Arith.EqNat Coq.ZArith.Int Integers AST types Maps.
 
+Inductive constant : Type :=
+| ConsInt : int -> constant
+| ConsBool : bool -> constant
+| ConsUnit : constant.
+
 (* The source language never exposes the heap binding construct hpφ.e directly to the user 
    but during evaluation the reductions on heap operations create heaps and use them. *)
 Inductive expr : Type :=
-| Var : ident -> ktype -> expr                 (* variable *)
-| Const : int -> expr                          (* constant (only allows integer *)
-| HeapVar : ident -> ktype -> expr             (* heap variable *)
-| Ref : expr -> ktype -> expr                  (* address of &r *)
-| Deref : expr -> ktype -> expr                (* pointer dereference (!r) *).
+| Var : type -> ident -> expr                             (* variable *)
+| Const : constant -> expr                                (* constant *)
+| Abs : nat -> list (ident * type) -> expr -> expr        (* f(x1,.., xn) = e *)
+| App : expr -> nat -> list expr -> expr                  (* e en *)
+| Addr : ident -> expr                                    (* address *)
+| Ref : type -> expr -> expr                              (* allocation : ref t e allocates e of type t and returns the fresh address *)
+| Deref : type -> expr -> expr                            (* dereference : deref t e returns the value of type t present at location e *)
+| Run : expr -> expr                                      (* eliminate heap effect : [r1-> v1, ..., ern->vn] e reduces to e  
+                                                             captures the essence of state isolation and reduces to a value discarding the heap *)
+| Sexpr : expr -> expr                                    (* assign value at a location l (l := e) 
+                                                             assigns the evaluation of e to the reference cell l *)
+| Hexpr : ident -> expr -> expr                           (* heap effect *) (* ident should be heapmap *) 
+| Lexpr : ident -> type -> expr -> expr                   (* let binding *)
+| Cond : expr -> expr -> expr                             (* if e then e else e *).
 
-Inductive instr : Type :=
-| Abs : ident -> ktype -> instr -> instr       (* Lambda x : T. instr *)                   
-| App : instr -> instr -> instr                (* Lambda x : T.instr.[x] *)
-| Letb : ident -> instr -> instr -> instr      (* let x = i1 in i2 *)
-| Cond : expr -> instr -> instr -> instr       (* if e then i1 else i2 *)
-| Assgn : expr -> expr -> instr                (* lval := expr *)
-| Seq : instr -> instr -> instr                (* i1;i2 *). 
 
-(** A value is either:
-- Vundef: denoting an arbitrary value, such as the value of an uninitialized variable
-- an integer
+(* A value is either:
+- a constant
 - an abstraction : as there is no rule for reduction for abstraction ;
+- a memory location
 *)
 
 (* Values *)
-Inductive val: Type :=
-| Vundef: val
-| Vint: int -> val.
-(*| Vabs : ident -> ktype -> instr -> val.*)
+Inductive value: expr -> Prop :=
+| Vconst : forall c,
+           value (Const c)
+| Vabs : forall n xt e,
+         value (Abs n xt e)
+| Vloc : forall l,
+         value (Addr l).
 
-Definition heap := PMap.t val.
-Definition vmap := PTree.t val.
+Definition heap := list (ident * expr).
+Definition vmap := list (ident * expr).
+         
 
-Section EXPR.
-Variable VM : vmap.
-Variable H : heap.
 
-(* Semantics of expressions *) Print PTree.
-Inductive eval_expr : expr -> val -> Prop :=
-| EVar : forall x t v,
-         PTree.get x VM = Some v ->
-         eval_expr (Var x t) v
-| EConst : forall i,
-               eval_expr (Const i) (Vint i).
+(*(* Memory and Variable Map *)
+Module M := FMapAVL.Make  Positive_as_OT.
+Module P := WProperties_fun Positive_as_OT M.
+Module F := P.F.
+
+(* Map from ident to val: Map is build using a AVL tree for fast operations *)
+Definition heap := M.t val. 
+Definition vmap := M.t val.*)
+
+
 
 
 
