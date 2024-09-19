@@ -3,14 +3,14 @@ Require Import String ZArith Coq.FSets.FMapAVL Coq.Structures.OrderedTypeEx.
 Require Import Coq.FSets.FSetProperties Coq.FSets.FMapFacts FMaps FSetAVL Nat PeanoNat.
 Require Import Coq.Arith.EqNat Coq.ZArith.Int Integers AST.
 
-Inductive effect_atom : Type :=
-| Exn : effect_atom               (* exception effect *)
-| Div : effect_atom               (* divergence effect *)
-| Hst : ident -> effect_atom      (* heap effect *).
+Inductive effect_label : Type :=
+| Exn : effect_label               (* exception effect *)
+| Div : effect_label               (* divergence effect *)
+| Hst : ident -> effect_label      (* heap effect *).
 
 Inductive effect : Type :=
 | Empty : effect                           (* empty effect *)
-| Esingle : effect_atom -> effect          (* single effect *)
+| Esingle : effect_label -> effect         (* single effect *)
 | Erow : effect -> effect -> effect        (* row of effects *)
 | Evar : ident -> effect                   (* effect variable *).
 
@@ -31,7 +31,7 @@ Inductive type : Type :=
 
 
 (* Equality on types *)
-Definition eq_effect_atom (e1 e2 : effect_atom) : bool :=
+Definition eq_effect_label (e1 e2 : effect_label) : bool :=
 match e1, e2 with 
 | Exn, Exn => true 
 | Div, Div => true 
@@ -42,7 +42,7 @@ end.
 Fixpoint eq_effect (e1 e2 : effect) : bool :=
 match e1, e2 with 
 | Empty, Empty => true 
-| Esingle e, Esingle e' => eq_effect_atom e e'
+| Esingle e, Esingle e' => eq_effect_label e e'
 | Erow e es, Erow e' es' => eq_effect e e' && eq_effect es es'
 | Evar id1, Evar id2 => (id1 =? id2)%positive
 | _, _ => false
@@ -102,7 +102,9 @@ end.
 
 (* Typing context *)
 Definition ty_context := list (ident * type).
-Definition store_context := list (ident * type).
+(* To ensure that a location does not contain another location (ref) 
+   and only points to basic types like int, bool, unit or pair *)
+Definition store_context := list (ident * basic_type).   
 
 Fixpoint remove_var_ty (t : ty_context) (k : ident) (T : type) : ty_context :=
 match t with 
@@ -139,4 +141,10 @@ match ks with
 | nil => t
 | k :: ks => extend_contexts (extend_context t k.1 k.2) ks
 end. 
+
+Fixpoint get_sty (t : store_context) (k : ident) : option basic_type :=
+match t with 
+| nil => None 
+| x :: xs => if (x.1 =? k)%positive then Some x.2 else get_sty xs k
+end.
 
