@@ -1,0 +1,101 @@
+%%%%-----Language Name-------%%%%
+\newcommand*\Coq{\text{Coq}}
+\newcommand*\Caml{\text{OCaml}}
+%%%%------Reference-------%%%%%%
+\newcommand*\figref[1]{Figure~\ref{fig:#1}}
+\newcommand*\secref[1]{Section~\ref{sec:#1}}
+
+%%%%-----Source Language-------%%%%
+\newcommand{\leaksem}{$\rightarrow_{leak}$}
+
+
+
+
+%%%%----Comment-----%%%%%
+%\newcommand{\sptodo}[1] {\textbf{\textcolor{blue}{sp:}}\textbf{\textcolor{blue}{#1}}}
+\newcommand\vlnote[1]{{\sffamily\color{blue!50!red}[VL] #1}}
+\newcommand{\gb}[1]{{\sffamily\color{blue!70!red}[GB] #1}}
+\newcommand{\bg}[1]{{\sffamily\color{blue!90!red}[BG] #1}}
+\newcommand{\spnote}[1]{{\sffamily\color{green!40!red}[SP] #1}}
+\newcommand{\bash}[1]{{\sffamily\color{blue!40!red}[BAS] #1}}
+
+%%%%%%%%%%%%%%
+\newcommand{\expr}{\mathsf{Expr}}
+
+\newcommand{\kw}[1]{{\ensuremath{\mathsf{#1}}}}
+\newcommand{\kskip}{\kw{skip}}
+\newcommand{\kif}{\kw{if}}
+\newcommand{\kthen}{\kw{then}}
+\newcommand{\kelse}{\kw{else}}
+
+\newcommand{\iseq}[2]{{#1}; {#2}}
+\newcommand{\iass}[2]{\ensuremath{#1  :=#2}}
+\newcommand{\icond}[3]{\kif\ {#1}\ \kthen\ {#2}\ \kelse\ {#3}}
+
+
+%%%%% Math %%%%%%
+\DeclareUnicodeCharacter{00B7}{\cdot}
+\DeclareUnicodeCharacter{00D7}{\ifmmode\times\else\texttimes\fi}
+\DeclareUnicodeCharacter{00F7}{\ifmmode\div\else\textdiv\fi}
+\DeclareUnicodeCharacter{03B3}{\ensuremath{\gamma}}
+\DeclareUnicodeCharacter{03BA}{\ensuremath{\kappa}}
+\DeclareUnicodeCharacter{03C4}{\ensuremath{\tau}}
+\DeclareUnicodeCharacter{03C6}{\ensuremath{\varphi}}
+\DeclareUnicodeCharacter{2081}{\ensuremath{{}_1}}
+\DeclareUnicodeCharacter{2082}{\ensuremath{{}_2}}
+\DeclareUnicodeCharacter{2113}{\ensuremath{\ell}}
+\DeclareUnicodeCharacter{21A6}{\ensuremath{\mapsto}}
+\DeclareUnicodeCharacter{21D2}{\implies}
+\DeclareUnicodeCharacter{21D3}{\Downarrow}
+\DeclareUnicodeCharacter{2200}{\forall}
+\DeclareUnicodeCharacter{2203}{\exists}
+\DeclareUnicodeCharacter{2208}{\in}
+\DeclareUnicodeCharacter{2218}{\ensuremath{\circ}}
+\DeclareUnicodeCharacter{2227}{\mathop{\land}}
+\DeclareUnicodeCharacter{222A}{\cup}
+\DeclareUnicodeCharacter{2260}{\neq}
+\DeclareUnicodeCharacter{2264}{\leqslant}
+\DeclareUnicodeCharacter{2291}{\sqsubseteq}
+
+
+%%% Semantics %%%%%%%
+\newcommand{\rname}[1]{\ensuremath{[\textsc{#1}]}}
+\let\xinferrule\inferrule
+\renewcommand{\inferrule}[3][]{%
+	\ifx&#1&
+	\xinferrule*{#2}{#3}
+	\else
+	\xinferrule*[right=\rname{#1}]{#2}{#3}
+	\fi}
+\newcommand{\subst}[2]{#1 := #2}
+\newcommand{\sem}[2]{\llbracket #1 \rrbracket #2}
+
+\def\substitute#1by#2{[#2/#1]}
+
+\newcommand*\vtrue{\ensuremath{{t\kern-.4ex t}}}
+\newcommand*\vfalse{\ensuremath{{f\kern-.7ex f}}}
+
+
+\newtheorem{lemma}{Lemma}
+
+
+
+
+
+
+\newcommand{\Equiv}[4]{{#1} \thicksim {#2}~:~ {#3} \Longrightarrow {#4}}  
+\newcommand{\pre}{\varphi}
+\newcommand{\post}{\psi}
+
+\newcommand{\ecmodele}[1]{\{#1\}}
+\newcommand{\ecmodel}[1]{[{#1}]}
+\newcommand{\eqon}[1]{=_{\{#1\}}}
+
+
+
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\newcommand{\vleft}{\{1\}}
+\newcommand{\vright}{\{2\}}
+
+
+

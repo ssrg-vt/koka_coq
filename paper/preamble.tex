@@ -1,0 +1,60 @@
+\usepackage{mathtools}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage{xcolor}
+\usepackage[linguistics]{forest}
+\usetikzlibrary{fit}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{comment}
+\usepackage{mdframed}
+\usetikzlibrary{cd}
+\usetikzlibrary{arrows,shapes,positioning,shadows,trees}
+\usepackage{proof}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{paralist,enumitem}
+\usepackage{mathpartir}
+\usepackage{coqdoc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{lineno}
+%\hypersetup{draft}
+\usepackage{color}
+\usepackage{diagbox}
+\usepackage{pifont}
+\usepackage{fancybox}
+\usepackage{nccmath}
+%\usepackage[cache=false]{minted}
+%\usemintedstyle{friendly}
+%\setminted[c]{breaklines,xleftmargin=2em,xrightmargin=2em,tabsize=4,obeytabs,frame=single,framesep=5pt,fontsize=\small}
+
+\setlist{left=.618\parindent .. 1.618\parindent}
+
+
+\newif\iffullversion
+\fullversionfalse
+
+
+\newif\ifdiff
+\difffalse
+\newcommand{\revised}[1]{\ifdiff{\color{blue!70!black}#1}\else{#1}\fi}
+
+% Link colors
+
+\hypersetup{
+	colorlinks,
+	linkcolor={red!70!black},
+	citecolor={red!70!black},
+	urlcolor={blue!70!black}
+}
+
+\definecolor{ao(english)}{rgb}{0.0, 0.5, 0.0}
+
+
+
+
+
+\renewcommand*\ttdefault{\sfdefault}

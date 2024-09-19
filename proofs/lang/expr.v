@@ -51,6 +51,12 @@ Inductive value: expr -> Prop :=
 
 Definition vmap := list (ident * expr).
 
+Fixpoint get (l : list (ident * expr)) (k : ident) : option expr :=
+match l with 
+| nil => None 
+| v :: vm => if (k =? v.1)%positive then Some v.2 else get vm k
+end.
+
 (* Typing Rules *)
 Inductive ty_expr : ty_context -> store_context -> expr -> type -> effect -> Type :=
 (* Since the variable and constant evaluation produces no effect, 
@@ -72,19 +78,19 @@ Inductive ty_expr : ty_context -> store_context -> expr -> type -> effect -> Typ
            ty_expr Gamma Sigma e (Ftype ts n ef t1) ef ->
            ty_exprs Gamma Sigma es ts ef ->
            ty_expr Gamma Sigma (App e n es) t1 ef
-| Ty_addr : forall Gamma Sigma l t ef,
+| Ty_addr : forall Gamma Sigma l t h ef,
             get_sty Sigma l = Some t -> 
-            ty_expr Gamma Sigma (Addr t l) (Reftype ef t) ef
+            ty_expr Gamma Sigma (Addr t l) (Reftype h t) ef
 | Ty_ref : forall Gamma Sigma e t h ef,
            ty_expr Gamma Sigma e (Btype t) ef->
-           ty_expr Gamma Sigma (Ref t e) (Reftype (Esingle (Hst h)) t) (Erow (Esingle (Hst h)) ef)
+           ty_expr Gamma Sigma (Ref t e) (Reftype h t) (Erow (Esingle (Hst h)) ef)
 | Ty_deref : forall Gamma Sigma e t h ef,
-             ty_expr Gamma Sigma e (Reftype (Esingle (Hst h)) t) ef ->
+             ty_expr Gamma Sigma e (Reftype h t) ef ->
              ty_expr Gamma Sigma (Deref t e) (Btype t) (Erow (Esingle (Hst h)) ef)
-| Ty_mexpr : forall Gamma Sigma e1 t e2 h ef ef',
-             ty_expr Gamma Sigma e1 (Reftype ef t) ef ->
-             ty_expr Gamma Sigma e2 (Btype t) ef' ->
-             ty_expr Gamma Sigma (Mexpr e1 e2) (Btype (Bprim Tunit)) (Erow (Erow (Esingle (Hst h)) ef) ef')
+| Ty_mexpr : forall Gamma Sigma e1 t e2 h ef,
+             ty_expr Gamma Sigma e1 (Reftype h t) ef ->
+             ty_expr Gamma Sigma e2 (Btype t) ef ->
+             ty_expr Gamma Sigma (Mexpr e1 e2) (Btype (Bprim Tunit)) (Erow (Esingle (Hst h)) ef)
 | Ty_run : forall Gamma Sigma e t h ef, (* Need to add that h is not a free variable in Gamma and Sigma *)
            ty_expr Gamma Sigma e t (Erow (Esingle (Hst h)) ef) ->
            ty_expr Gamma Sigma (Run e) t ef
@@ -114,3 +120,35 @@ Scheme ty_expr_exprs_rec := Induction for ty_expr Sort Prop
  with ty_exprs_expr_rec := Induction for ty_exprs Sort Prop.
 
 
+(* State is made from heap and virtual map (registers to values) *)
+Inductive state : Type :=
+| State : heap -> vmap -> state.
+
+Definition get_vmap (st : state) : vmap :=
+match st with 
+| State h vm => vm
+end.
+
+Definition get_heap (st : state) : heap :=
+match st with 
+| State h vm => h
+end.
+
+(* Substitution *)
+Fixpoint subst (x:ident) (e':expr) (e:expr) : expr :=
+match e with
+| Var t y => if (x =? y)%positive then e' else e
+| Const c => Const c
+| _ => e
+end.
+
+
+(* Operational Semantics *)
+Inductive sem_expr : state -> expr -> state -> expr -> Prop :=
+| sem_var : forall st x t vm v,
+            get_vmap st = vm ->
+            get vm x = Some v ->
+            sem_expr st (Var t x) st v.
+            
+            
+            
