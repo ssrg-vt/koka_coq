@@ -114,25 +114,3 @@ Scheme ty_expr_exprs_rec := Induction for ty_expr Sort Prop
  with ty_exprs_expr_rec := Induction for ty_exprs Sort Prop.
 
 
-
-
-Inductive basic_type : Type :=
-| Bprim : primitive_type -> basic_type 
-| Bpair : nat -> list basic_type -> basic_type    (* pair of types *).
-
-Inductive type : Type :=
-| Btype : basic_type -> type                              (* basic types *)
-| Ftype : list type -> nat -> effect -> type -> type      (* function/arrow type *)
-| Reftype : effect -> basic_type -> type                  (* reference type ref<h,int> *)
-| Ptype : nat -> list type -> type                        (* pair type *). 
-
-Inductive effect_label : Type :=
-| Exn : effect_label               (* exception effect *)
-| Div : effect_label               (* divergence effect *)
-| Hst : ident -> effect_label      (* heap effect *).
-
-Inductive effect : Type :=
-| Empty : effect                           (* empty effect *)
-| Esingle : effect_label -> effect         (* single effect *)
-| Erow : effect -> effect -> effect        (* row of effects *)
-| Evar : ident -> effect                   (* effect variable *).
