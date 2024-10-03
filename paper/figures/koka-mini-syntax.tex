@@ -1,14 +1,55 @@
 \begin{figure}[H]
-	\begin{mdframed}
+	%\begin{mdframed}
 		\small
-		\[\begin{array}{r@{\ \ }l@{\quad}ll}
-			e  \in \expr ::= & x           & \mbox{variable}\\
-			\mid & c     & \mbox{constant} \\
-			\mid & \icond e e e  & \mbox{conditional expression} \\
-			
-			
-		\end{array}\]
-	\end{mdframed}
-	\caption{\label{fig:koka-mini-syntax}%
-    Syntax of Koka-mini programs}
+		\begin{minipage}[t]{.55\columnwidth}
+			\[\begin{array}{@{}r@{\ \ }l@{\quad}l}
+				e  \in \expr ::= & x                          & \mbox{variable}\\
+				               \mid & c     			    & \mbox{constant} \\
+				              \mid & \abs x T n e           & \mbox{abstraction}\\
+				              \mid & \app e e n              & \mbox{application} \\
+				              \mid & \addr l T                 & \mbox{mem-address}\\
+				              \mid & \alloc e T               & \mbox{allocation} \\
+				              \mid & \deref e T              & \mbox{dereference} \\
+				              \mid & \eass e e              & \mbox{mem-update}\\ 
+				              \mid & \run e                   & \mbox{isolation}\\
+				              \mid & \hpe \kheap e              & \mbox{heap-binding}\\
+				              \mid & \elet x e e            & \mbox{let-binding} \\
+				              \mid & \cond e e e         & \mbox{conditional} \\ [2ex]
+			\end{array}\]
+		\end{minipage}%
+		\begin{minipage}[t]{.70\columnwidth}
+			\[\begin{array}{r@{\ \ }l@{\quad}l}
+				c \in \const ::= & \kw{bool} & \mbox{boolean}\\
+				               \mid & \kw{z}   & \mbox{integers}\\
+				               \mid & \kunit & \mbox{unit}\\[2ex]
+				b \in \kw{bool} := & \kw{true} \\
+				      \mid & \kw{false}       \\[2ex]
+				v \in \val := & c                     & \mbox{constant}\\
+				           \mid & \abs x T n e    & \mbox{abstraction}\\
+				           \mid & \addr l T          & \mbox{mem-address}\\[2ex]
+				
+			\end{array}\]
+		\end{minipage}
+		
+	%\end{mdframed}
+	\caption{Syntax of Koka-mini IR}\label{fig:koka-mini-IR}
 \end{figure}
+
+
+
+\begin{figure}[H]
+	%\begin{mdframed}
+		\small
+		\begin{minipage}[t]{.55\columnwidth}
+			\[\begin{array}{@{}r@{\ \ }l@{\quad}l}
+				\kheap := [l_1 \rightarrow v_1, ..., l_n \rightarrow v_n]. 
+				\hspace{2cm} \kvm := [x_1 \rightarrow v_1, ..., x_n \rightarrow v_n]				
+			\end{array}\]
+		\end{minipage}%
+		
+	%\end{mdframed}
+	\caption{Memory and Virtual Map}\label{fig:memory-model}
+\end{figure}
+
+
+

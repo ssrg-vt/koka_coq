@@ -1,30 +1,11 @@
-\newif\ifvlversion\vlversionfalse
-\documentclass[sigconf,\ifvlversion,authorversion\fi]{acmart}
-\settopmatter{printacmref=false} 
-\renewcommand\footnotetextcopyrightpermission[1]{} 
-\setcopyright{none} 
-
-\newtheorem{prop}{Proposition}
-\newtheorem{lem}{Lemma}
-\newtheorem{thm}{Theorem}
-\theoremstyle{definition}
-\newtheorem{defn}{Definition}
-\newtheorem{rem}{Remark}
-
+\documentclass[11pt,twoside,a4paper]{article}
 \input{preamble}
 \input{def} 
-
-
-
 \begin{document}
-\ifvlversion
-\fancyfoot[C]{\thepage}
-\else
-	\fancyhead{} 
-\fi
 
 
-\title{Paper}
+
+\title{BeePL: Correct-by-compilation kernel extensions}
 \author{Swarn Priya, Tim Steenvoorden}
 \maketitle
 \pagestyle{plain}
@@ -32,12 +13,4 @@
 
 \input{sections/introduction}
 \input{sections/language}
-
-
-
-
-%\bibliographystyle{ACM-Reference-Format}
-%\bibliography{bibfile}
-
-
 \end{document}

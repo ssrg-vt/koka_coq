@@ -57,7 +57,7 @@ Inductive value: expr -> Prop :=
            value (Const c)
 | Vabs : forall n xt e,
          value (Abs n xt e)
-| Vloc : forall t l,
+| Vaddr : forall t l,
          value (Addr t l).
 
 Inductive values: list expr -> Prop :=

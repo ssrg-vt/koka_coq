@@ -3,7 +3,12 @@
  \small
   \[
 \begin{array}{@{}c@{}}
-   \xinferrule*{s = (h,vm) \wedge v = vm(x)}{s,x \downarrow s,v}
+   \xinferrule*{s = (\kheap,\kvm) \wedge \kvm(x) = v}{\eval s x s v} \ \ \ \ \ \
+      \xinferrule*{~}{\eval s c s c}\ \ \ \ \ \ \xinferrule*{~}{\eval s {\addr l T} s {\addr l T}}\\[2ex]
+       \xinferrule*{\eval s e s' e'}{\eval s {\alloc e T} s' {\alloc {e'} T}}\ \ \ \ \ \
+       \xinferrule*{fresh(l) \wedge \kheap[l \leftarrow v] = \kheap' \wedge s' = (\kheap', s_\kvm)}{\eval s {\alloc v T}s' {\addr l T}}\\[2ex]
+              \xinferrule*{\eval s e s' e'}{\eval s {\deref e T} s' {\deref {e'} T}}\ \ \ \ \ \
+       \xinferrule*{\kheap[l] = v}{\eval s {\deref {(\addr l T)} T} s v}
   \end{array}
  \]
 \end{mdframed}

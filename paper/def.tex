@@ -21,16 +21,42 @@
 
 %%%%%%%%%%%%%%
 \newcommand{\expr}{\mathsf{Expr}}
+\newcommand{\val}{\mathsf{Value}}
+\newcommand{\const}{\mathsf{Const}}
 
 \newcommand{\kw}[1]{{\ensuremath{\mathsf{#1}}}}
 \newcommand{\kskip}{\kw{skip}}
 \newcommand{\kif}{\kw{if}}
+\newcommand{\klet}{\kw{let}}
+\newcommand{\kin}{\kw{in}}
+\newcommand{\krun}{\kw{run}}
 \newcommand{\kthen}{\kw{then}}
 \newcommand{\kelse}{\kw{else}}
+\newcommand{\kunit}{\kw{Unit}}
+\newcommand{\kheap}{\Theta}
+\newcommand{\kvm}{\Pi}
+
 
 \newcommand{\iseq}[2]{{#1}; {#2}}
-\newcommand{\iass}[2]{\ensuremath{#1  :=#2}}
-\newcommand{\icond}[3]{\kif\ {#1}\ \kthen\ {#2}\ \kelse\ {#3}}
+\newcommand{\eass}[2]{\ensuremath{#1  :=#2}}
+\newcommand{\cond}[3]{\kif\ {#1}\ \kthen\ {#2}\ \kelse\ {#3}}
+\newcommand{\run}[1]{\krun\ {#1}}
+\newcommand{\hpe}[2]{\kw{hp}\ {#1}.{#2}}
+\newcommand{\alloc}[2]{\&{(#1 : #2)}}
+\newcommand{\deref}[2]{^^21{(#1 : #2)}}
+\newcommand{\addr}[2]{{#1 : #2}}
+\newcommand{\app}[3]{#1 \ \overline{#2}^{#3}}
+\newcommand{\abs}[4]{\lambda \overline{#1 : #2}^#3.#4} 
+\newcommand{\elet}[3]{\klet\ #1 := #2 \ \kin \ {#3}}
+
+%%%%Evaluation
+\newcommand{\eval}[4]{#1,#2 \downarrow #3,#4}
+
+
+
+
+
+
 
 
 %%%%% Math %%%%%%
@@ -99,3 +125,9 @@
 
 
 
+\newtheorem{prop}{Proposition}
+\newtheorem{lem}{Lemma}
+\newtheorem{thm}{Theorem}
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
+\newtheorem{rem}{Remark}

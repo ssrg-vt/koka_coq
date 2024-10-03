@@ -1,3 +1,5 @@
 \section{Koka-mini Language}
 \input{figures/koka-mini-syntax}
+\figref{koka-mini-IR} presents the syntax of Koka-mini intermediate language. Expressions are built from variables, constants, abstraction, application, memory location, references, dereferences, assignment, memory isolation, heap binding, let binding and conditional. The semantic uses the judgment of the form $\eval{s}{e}{s'}{v}$ representing that the evaluation of the expression $e$ in the state $s$ produces an updated state $s'$ and a value $v$.
+A state is a pair of a memory $\kheap$ (mapping from location to values) and a valuation for variables $\kvm$ (mapping from variables to values). $\kvm(x)$ represents the value associated with the variable $x$ in the virtual map $\kvm$ and $\kheap[l]$ represents the value present as the location $l$ in the heap $\kheap$.
 \input{figures/expr-semantics}
