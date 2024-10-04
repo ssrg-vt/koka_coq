@@ -1,0 +1,52 @@
+\begin{figure}[H]
+	%\begin{mdframed}
+		\small
+		\begin{minipage}[t]{.55\columnwidth}
+			\[\begin{array}{@{}r@{\ \ }l@{\quad}l}
+				t  \in \kw{T} ::= & t_b                       & \mbox{basic-type}\\
+				               \mid &  \funt t n {\kw{e_f}} t       & \mbox{fun-type} \\
+				              \mid & \reft h {t_b}                 & \mbox{ref-type}\\
+				              \mid &\kw{\overline{t}^{n}}         & \mbox{row-type}\\[2ex]                 
+				t_p \in \kw{T_p} := & \kw{tunit}        & \mbox{unit}\\
+				                     \mid & \kw{int}         & \mbox{int}\\
+				                     \mid & \kw{bool}        & \mbox{bool}\\[2ex]
+			       t_b \in \kw{T_b} := & \kw{t_p}        & \mbox{prim-type}\\
+				                     \mid & \kw{\overline{t_p}^{n}}         & \mbox{row-base-type}\\               
+			
+			\end{array}\]
+		\end{minipage}%
+		\begin{minipage}[t]{.70\columnwidth}
+			\[\begin{array}{r@{\ \ }l@{\quad}l}
+				e_l \in \effectlabel ::= & \kw{exn} & \mbox{exception}\\
+				               \mid & \kw{div}   & \mbox{divergence}\\
+				               \mid & \kw{hid} & \mbox{heap}\\[2ex]
+				e_f \in \kw{effect} := & \kw{\phi_{e_f}} & \mbox{empty} \\
+				                      \mid & \kw{e_l} & \mbox{single}\\
+				                      \mid & \kw{\overline{e_f}}  & \mbox{row effect}\\
+				                      \mid & \kw{eid} & \mbox{var}     \\[2ex]
+				
+			\end{array}\]
+		\end{minipage}
+		
+	%\end{mdframed}
+	\caption{Types of Koka-mini IR}\label{fig:koka-mini-types}
+\end{figure}
+
+
+\begin{figure}[H]
+	%\begin{mdframed}
+		\small
+		\begin{minipage}[t]{.55\columnwidth}
+			\[\begin{array}{@{}r@{\ \ }l@{\quad}l}
+				\Gamma := [x_1 \rightarrow T_1, ..., x_n \rightarrow T_n]
+				\hspace{2cm} \Sigma := [l_1 \rightarrow T_1, ..., l_n \rightarrow T_n]				
+			\end{array}\]
+		\end{minipage}%
+		
+	%\end{mdframed}
+	\caption{Type and store environment}\label{fig:type-store}
+\end{figure}
+
+
+
+

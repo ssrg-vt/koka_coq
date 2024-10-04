@@ -32,9 +32,11 @@
 \newcommand{\krun}{\kw{run}}
 \newcommand{\kthen}{\kw{then}}
 \newcommand{\kelse}{\kw{else}}
-\newcommand{\kunit}{\kw{Unit}}
+\newcommand{\kunit}{\kw{unit}}
 \newcommand{\kheap}{\Theta}
 \newcommand{\kvm}{\Pi}
+\newcommand{\effectlabel}{\kw{effect_l}}
+
 
 
 \newcommand{\iseq}[2]{{#1}; {#2}}
@@ -49,8 +51,17 @@
 \newcommand{\abs}[4]{\lambda \overline{#1 : #2}^#3.#4} 
 \newcommand{\elet}[3]{\klet\ #1 := #2 \ \kin \ {#3}}
 
+%%%%Types 
+\newcommand{\funt}[4]{\overline{#1}^#2 \rightarrow #3, #4}
+\newcommand{\reft}[2]{\kw{ref}(#1, #2)}
+
+
 %%%%Evaluation
 \newcommand{\eval}[4]{#1,#2 \downarrow #3,#4}
+
+%%%%%Typing 
+\newcommand{\typerule}[5]{#1,#2 \vdash #3 : #4, #5}
+
 
 
 

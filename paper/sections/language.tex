@@ -1,5 +1,16 @@
 \section{Koka-mini Language}
+\subsection{Syntax and semantics}
 \input{figures/koka-mini-syntax}
 \figref{koka-mini-IR} presents the syntax of Koka-mini intermediate language. Expressions are built from variables, constants, abstraction, application, memory location, references, dereferences, assignment, memory isolation, heap binding, let binding and conditional. The semantic uses the judgment of the form $\eval{s}{e}{s'}{v}$ representing that the evaluation of the expression $e$ in the state $s$ produces an updated state $s'$ and a value $v$.
-A state is a pair of a memory $\kheap$ (mapping from location to values) and a valuation for variables $\kvm$ (mapping from variables to values). $\kvm(x)$ represents the value associated with the variable $x$ in the virtual map $\kvm$ and $\kheap[l]$ represents the value present as the location $l$ in the heap $\kheap$.
+A state is a pair of a memory $\kheap$ (mapping from location to values) and a valuation for variables $\kvm$ (mapping from variables to values). $\kvm(x)$ represents the value associated with the variable $x$ in the virtual map $\kvm$ and $\kheap[l]$ represents the value present as the location $l$ in the heap $\kheap$. The notion $[\_ \leftarrow \_]$ represents updating the memory or the virtual map. The projection $s_{\kheap}$ returns the heap and $s_{\kvm}$ returns the virtual map.
 \input{figures/expr-semantics}
+Evaluation of a variable results to the value associated with the variable $x$ in the virtual map $\Pi$ for the variable $x$. 
+Evaluation of $\run {\hpe \kheap e}$ produces $e$ representing the scenario of safely removing the state effect and proceeding with the expression. This captures the essence of the function whose body can produce stateful effect, but the function itself is a total function.
+The operational semantics for function application $\app e e' n$ is pretty-straightforward with the constraint of evaluating the arguments before calling the function.
+\subsection{Type system}
+\input{figures/koka-type-system}
+\figref{koka-mini-types} presents the available types in the language. The type of the language does not only capture the type of the computations involved, but also captures the side-effect that can be produced during the computation.
+\input{figures/expr-typesystem}
+\subsection{Effects}
+To capture the notion of side-effects that might arise during a computation, a new type called $\kw{effect}$ is introduced. The basic effects represented as $e_l$ in the \figref{koka-mini-types} can be $\kw{exn}$, $\kw{div}$ and $\kw{hid}$. When a function can throw an exception, it gets an $\kw{exn}$ effect. A non-terminating function gets $\kw{div}$ effect. The effect $\kw{hid}$ represents an identifier that captures the stateful effects over the heap. For example, allocation or dereferencing a pointer issues a stateful effect as it performs operation related to heap.
+A function can also produce more than one effect, which is represented as row of effects $\overline{e_f}$. For example, the effect of a pure function is represented as $[\kw{exn}, \kw{div}]$. A total function does not produce any side-effect, which is represented using $\phi_{e_f}$. 

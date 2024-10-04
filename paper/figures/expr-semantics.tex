@@ -1,16 +1,28 @@
-\begin{figure}[!ht]
- \begin{mdframed}	
+\begin{figure}[H]
+ %\begin{mdframed}	
  \small
   \[
 \begin{array}{@{}c@{}}
-   \xinferrule*{s = (\kheap,\kvm) \wedge \kvm(x) = v}{\eval s x s v} \ \ \ \ \ \
+   \xinferrule*{s_\kvm = \kvm \wedge \kvm(x) = v}{\eval s x s v} \ \ \ \ \ \
       \xinferrule*{~}{\eval s c s c}\ \ \ \ \ \ \xinferrule*{~}{\eval s {\addr l T} s {\addr l T}}\\[2ex]
+      
        \xinferrule*{\eval s e s' e'}{\eval s {\alloc e T} s' {\alloc {e'} T}}\ \ \ \ \ \
-       \xinferrule*{fresh(l) \wedge \kheap[l \leftarrow v] = \kheap' \wedge s' = (\kheap', s_\kvm)}{\eval s {\alloc v T}s' {\addr l T}}\\[2ex]
-              \xinferrule*{\eval s e s' e'}{\eval s {\deref e T} s' {\deref {e'} T}}\ \ \ \ \ \
-       \xinferrule*{\kheap[l] = v}{\eval s {\deref {(\addr l T)} T} s v}
+       \xinferrule*{fresh(l) \wedge s_\Theta = \Theta \wedge \kheap[l \leftarrow v] = \kheap' \wedge s' = (\kheap', s_\kvm)}{\eval s {\alloc v T}s' {\addr l T}}\\[2ex]
+       
+       \xinferrule*{\eval s e s' e'}{\eval s {\deref e T} s' {\deref {e'} T}}\ \ \ \ \ \
+       \xinferrule*{\kheap[l] = v}{\eval s {\deref {(\addr l T)} T} s v} \ \ \ \ \ \ \xinferrule*{~}{\eval s {\run {\hpe \kheap e}} s e} \\[2ex]
+       
+       \xinferrule*{\eval s {e_1} s' {e_1'}}{\eval s {\eass {e_1} {e_2}} s' {\eass {e_1'} {e_2}}} \ \ \ \ \ \ 
+       \xinferrule*{\eval s {e_2} s' {e_2'}}{\eval s {\eass {v} {e_2}} s' {\eass {v} {e_2'}}}\ \ \ \ \ \
+       \xinferrule*{s_\Theta = \Theta \wedge \Theta[l \leftarrow v] = \Theta' \wedge s' = (\Theta', s_\Pi)}
+       {\eval s {\eass {\addr l T} {v}} s' {\kunit}}\\[2ex]
+       
+       \xinferrule*{\eval s {e_1} s' {e_1'}}{\eval s {\app {e_1} {e_2} n} s' {\app {e_1'} {e_2} n}} \ \ \ \ \ \ 
+       \xinferrule*{\eval s {e_2} s' {e_2'}}{\eval s {\app {v} {e_2} {n}} s' {\app {v} {e_2'} {n}}}\ \ \ \ \ \
+       \xinferrule*{n = n'}
+       {\eval s {\app {(\abs x T n {e})} {v} {n'}} s [\overline{x : T}^n \leftarrow {\overline{v}^{n'}}]e}
   \end{array}
  \]
-\end{mdframed}
+%\end{mdframed}
  \caption{Semantics for expressions.}\label{fig:exp_sem}
 \end{figure}
