@@ -327,8 +327,11 @@ Inductive sem_expr : state -> expr -> state -> expr -> Prop :=
 | sem_hexpr4 : forall st t l e e' st' h,
                value (Addr t l) ->
                sem_expr st e st' e' ->
-               sem_expr st (Hexpr h (Massgn (Addr t l) e)) st' (Hexpr h (Massgn (Addr t l) e')) 
-| sem_hexpr5 : forall st t l h v hm,
+               sem_expr st (Hexpr h (Massgn (Addr t l) e)) st' (Hexpr h (Massgn (Addr t l) e'))
+| sem_hexpr5 : forall st e1 e1' e2 st' h,
+               sem_expr st e1 st' e1' ->
+               sem_expr st (Hexpr h (Massgn e1 e2)) st' (Hexpr h (Massgn e1' e2)) 
+| sem_hexpr6 : forall st t l h v hm,
                get_heap st = h ->
                h = (H hm) ->
                get hm l = Some v ->

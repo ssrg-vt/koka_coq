@@ -13,11 +13,7 @@
 
 %%%%----Comment-----%%%%%
 %\newcommand{\sptodo}[1] {\textbf{\textcolor{blue}{sp:}}\textbf{\textcolor{blue}{#1}}}
-\newcommand\vlnote[1]{{\sffamily\color{blue!50!red}[VL] #1}}
-\newcommand{\gb}[1]{{\sffamily\color{blue!70!red}[GB] #1}}
-\newcommand{\bg}[1]{{\sffamily\color{blue!90!red}[BG] #1}}
 \newcommand{\spnote}[1]{{\sffamily\color{green!40!red}[SP] #1}}
-\newcommand{\bash}[1]{{\sffamily\color{blue!40!red}[BAS] #1}}
 
 %%%%%%%%%%%%%%
 \newcommand{\expr}{\mathsf{Expr}}
@@ -54,6 +50,10 @@
 %%%%Types 
 \newcommand{\funt}[4]{\overline{#1}^#2 \rightarrow #3, #4}
 \newcommand{\reft}[2]{\kw{ref}(#1, #2)}
+\newcommand{\hid}[1]{st<#1>}
+\newcommand{\eid}{\mu}
+
+
 
 
 %%%%Evaluation
@@ -96,14 +96,6 @@
 
 
 %%% Semantics %%%%%%%
-\newcommand{\rname}[1]{\ensuremath{[\textsc{#1}]}}
-\let\xinferrule\inferrule
-\renewcommand{\inferrule}[3][]{%
-	\ifx&#1&
-	\xinferrule*{#2}{#3}
-	\else
-	\xinferrule*[right=\rname{#1}]{#2}{#3}
-	\fi}
 \newcommand{\subst}[2]{#1 := #2}
 \newcommand{\sem}[2]{\llbracket #1 \rrbracket #2}
 

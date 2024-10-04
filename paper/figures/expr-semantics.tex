@@ -3,24 +3,45 @@
  \small
   \[
 \begin{array}{@{}c@{}}
-   \xinferrule*{s_\kvm = \kvm \wedge \kvm(x) = v}{\eval s x s v} \ \ \ \ \ \
-      \xinferrule*{~}{\eval s c s c}\ \ \ \ \ \ \xinferrule*{~}{\eval s {\addr l T} s {\addr l T}}\\[2ex]
+   \inferrule*[left=\kw{SVAR}]{s_\kvm = \kvm \wedge \kvm(x) = v}{\eval s x s v} \ \ \ \ \ \
+      \inferrule*[left=\kw{SCONST}]{~}{\eval s c s c}\\[2ex]
+      \inferrule{~}{\eval s {\addr l T} s {\addr l T}}\ \ \ \ \ \ \
       
-       \xinferrule*{\eval s e s' e'}{\eval s {\alloc e T} s' {\alloc {e'} T}}\ \ \ \ \ \
-       \xinferrule*{fresh(l) \wedge s_\Theta = \Theta \wedge \kheap[l \leftarrow v] = \kheap' \wedge s' = (\kheap', s_\kvm)}{\eval s {\alloc v T}s' {\addr l T}}\\[2ex]
+       \inferrule*[left=\kw{SALLOC}]{\eval s e s' e'}{\eval s {\alloc e T} s' {\alloc {e'} T}}\\[2ex]
+       \inferrule*[left=\kw{SALLOCV}]{fresh(l) \wedge s_\Theta = \Theta \wedge \kheap[l \leftarrow v] = \kheap' \wedge s' = (\kheap', s_\kvm)}{\eval s {\alloc v T}s' {\addr l T}}\\[2ex]
        
-       \xinferrule*{\eval s e s' e'}{\eval s {\deref e T} s' {\deref {e'} T}}\ \ \ \ \ \
-       \xinferrule*{\kheap[l] = v}{\eval s {\deref {(\addr l T)} T} s v} \ \ \ \ \ \ \xinferrule*{~}{\eval s {\run {\hpe \kheap e}} s e} \\[2ex]
+       \inferrule*[left=\kw{SDEREF}]{\eval s e s' e'}{\eval s {\deref e T} s' {\deref {e'} T}}\ \ \ \ \ \
+       \inferrule*[left=\kw{SDEREFV}]{s_\Theta = \Theta  \wedge \kheap[l] = v}{\eval s {\deref {(\addr l T)} T} s v}\\[2ex]
+       \inferrule*[left=\kw{SRUN}]{~}{\eval s {\run {\hpe \kheap e}} s e} \ \ \ \ \ \
        
-       \xinferrule*{\eval s {e_1} s' {e_1'}}{\eval s {\eass {e_1} {e_2}} s' {\eass {e_1'} {e_2}}} \ \ \ \ \ \ 
-       \xinferrule*{\eval s {e_2} s' {e_2'}}{\eval s {\eass {v} {e_2}} s' {\eass {v} {e_2'}}}\ \ \ \ \ \
-       \xinferrule*{s_\Theta = \Theta \wedge \Theta[l \leftarrow v] = \Theta' \wedge s' = (\Theta', s_\Pi)}
+       \inferrule*[left=\kw{SMEMU1}]{\eval s {e_1} s' {e_1'}}{\eval s {\eass {e_1} {e_2}} s' {\eass {e_1'} {e_2}}} \\[2ex]
+       \inferrule*[left=\kw{SMEMU2}]{\eval s {e_2} s' {e_2'}}{\eval s {\eass {v} {e_2}} s' {\eass {v} {e_2'}}}\ \ \ \ \ \
+       \inferrule*[left=\kw{SMEMUV}]{s_\Theta = \Theta \wedge \Theta[l \leftarrow v] = \Theta' \wedge s' = (\Theta', s_\Pi)}
        {\eval s {\eass {\addr l T} {v}} s' {\kunit}}\\[2ex]
+       \inferrule*[left=\kw{SHEAP1}]{\eval s {e} s' {e'}}{\eval s {\hpe \kheap {\deref e T}} s' {\hpe \kheap {\deref e' T}}}\ \ \ \ \ \
+       \inferrule*[left=\kw{SHEAP2}]{s_\Theta = \Theta  \wedge \kheap[l] = v}{\eval s {\hpe \kheap {\deref {\addr l T} T}} s v} \\[2ex]
+
+       \inferrule*[left=\kw{SHEAP3}]{\eval s {e} s' {e''}}{\eval s {\hpe \kheap {\eass e e'}} s' {\hpe \kheap {\eass {e''} e'}}}\ \ \ \ \ \
+       \inferrule*[left=\kw{SHEAP4}]{\eval s {e} s' {e'}}{\eval s {\hpe \kheap {\eass {\addr l T} e'}} s' {\hpe \kheap {\eass {\addr l T} e'}}}\\[2ex]
        
-       \xinferrule*{\eval s {e_1} s' {e_1'}}{\eval s {\app {e_1} {e_2} n} s' {\app {e_1'} {e_2} n}} \ \ \ \ \ \ 
-       \xinferrule*{\eval s {e_2} s' {e_2'}}{\eval s {\app {v} {e_2} {n}} s' {\app {v} {e_2'} {n}}}\ \ \ \ \ \
-       \xinferrule*{n = n'}
-       {\eval s {\app {(\abs x T n {e})} {v} {n'}} s [\overline{x : T}^n \leftarrow {\overline{v}^{n'}}]e}
+       \inferrule*[left=\kw{SHEAP5}]{l \in domain(\kheap) \wedge \kheap[l \leftarrow v] = \Theta' \wedge s' = (\Theta', s_\Pi)}{\eval s {\hpe \kheap {\eass {\addr l T} v}} s' v}\ \ \ \ \ \
+       
+              \inferrule*[left=\kw{SHEAP6}]{s_\Theta = \Theta  \wedge \kheap[l] = v}{\eval s {\hpe \kheap {\addr l T}} s v}\\[2ex]
+
+       
+       \inferrule*[left=\kw{SAPP1}]{\eval s {e_1} s' {e_1'}}{\eval s {\app {e_1} {e_2} n} s' {\app {e_1'} {e_2} n}} \ \ \ \ \ \ 
+       \inferrule*[left=\kw{SAPP2}]{\eval s {e_2} s' {e_2'}}{\eval s {\app {v} {e_2} {n}} s' {\app {v} {e_2'} {n}}}\\[2ex]
+       \inferrule*[left=\kw{SAPPV}]{n = n'}
+       {\eval s {\app {(\abs x T n {e})} {v} {n'}} s [\overline{x : T}^n \leftarrow {\overline{v}^{n'}}]e}\\[2ex]
+       
+       \inferrule*[left=\kw{SLET}]{\eval s {e} s' {e''}}{\eval s {\elet x e {e'}} s' {\elet x {e''} {e'}}}\ \ \ \ \ \
+       \inferrule*[left=\kw{SLETV}]{~}{\eval s {\elet x v {e'}} s {[x \leftarrow v]e'}}\\[2ex]
+       
+       \inferrule*[left=\kw{SCONDT}]{~}{\eval s {\cond {\kw{true}} e {e'}} s {e}}\ \ \ \ \ \
+       \inferrule*[left=\kw{SCONDF}]{~}{\eval s {\cond {\kw{false}} e {e'}} s {e'}}\\[2ex]
+       
+       \inferrule*[left=\kw{SCOND}]{\eval s {e_b} s' {e_b'}}{\eval s {\cond {e_b} e {e'}} s' {\cond {e_b'} e {e'}}}\\[2ex]
+
   \end{array}
  \]
 %\end{mdframed}

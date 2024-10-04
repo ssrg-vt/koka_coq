@@ -1,11 +1,31 @@
-\begin{figure}[!ht]
+\begin{figure}[H]
  %\begin{mdframed}	
  \small
   \[
 \begin{array}{@{}c@{}}
-   \xinferrule*{~}{\typerule \Gamma \Sigma e T e_f}\\
+   \inferrule*[Left=\kw{VAR}]{\Gamma(x) = T}{\typerule \Gamma \Sigma x T \epsilon}\ \ \ \ \ \ \ \ \ \ \ 
+    \inferrule*[Left=\kw{BOOL}]{~}{\typerule \Gamma \Sigma {b} {tbool} \epsilon}\ \ \ \ \ \ \ \ \ \ \ 
+    \inferrule*[Left=\kw{INT}]{~}{\typerule \Gamma \Sigma {i} {tint} \epsilon}\\[2ex]
+    \inferrule*[Left=\kw{UNIT}]{~}{\typerule \Gamma \Sigma \kunit {tunit} \epsilon}\ \ \ \ \ \ \ \ \ \ \ 
+     \inferrule*[Left=\kw{LOC}]{\Sigma(l) = T}{\typerule \Gamma \Sigma {\addr {l} {T}}  {\reft h T} \epsilon}\\[2ex]
+      \inferrule*[Left=\kw{ALLOC}]{\typerule \Gamma \Sigma e {t_b} \epsilon}{\typerule \Gamma \Sigma {\alloc {e} {t_b}}  {\reft h {t_b}} [\hid{h}; \epsilon]}\ \ \ \ \ \ \ \ \ \ \
+            \inferrule*[Left=\kw{DEREF}]{\typerule \Gamma \Sigma e {\reft h {t_b}} \epsilon}{\typerule \Gamma \Sigma {\deref {e} {t_b}}  {t_b} [\hid{h}; \epsilon]}\\[2ex]
+             \inferrule*[Left=\kw{MEMU}]{\typerule \Gamma \Sigma {e_1} {\reft h {t_b}} \epsilon \wedge \typerule \Gamma \Sigma {e_2} {t_b} \epsilon}{\typerule \Gamma \Sigma {\eass {e_1} {e_2}}  {\kw{tunit}} [\hid{h}; \epsilon]}\\[2ex]
+                          \inferrule*[Left=\kw{RUN}]{\typerule \Gamma \Sigma {e} {t} {[\hid{h}; \epsilon]} \wedge h \notin ftv(\Gamma, \Sigma, t, \epsilon)}{\typerule \Gamma \Sigma {\run {e}}  {t} \epsilon}\ \ \ \ \ \ \ \ \ \ \ 
+                           \inferrule*[Left=\kw{HEAPB}]{\typerule \Gamma \Sigma {e} {t} {\epsilon}}{\typerule \Gamma \Sigma {\hpe \kheap e}  {t} [\hid{h}; \epsilon]}\\[2ex] 
+                            \inferrule*[Left=\kw{LET}]{\typerule \Gamma \Sigma {e} {t} {\phi_{e_f}} \wedge \typerule \Gamma \Sigma {e'} {t'} {\epsilon}}{\typerule {\Gamma, x : t} \Sigma {\elet x {e} {e'}}  {t'} \epsilon}\\[2ex]
+                             \inferrule*[Left=\kw{COND}]{\typerule \Gamma \Sigma {e_1} {tbool} {\epsilon_1} \wedge \typerule {\Gamma, x : t} \Sigma {e_2} {t} {\epsilon_2} \wedge \typerule \Gamma \Sigma {e_3} {t} {\epsilon_2} }{\typerule \Gamma \Sigma {\cond {e_1} {e_2} {e_3}}  {t} [\epsilon_1; \epsilon_2]}\\[2ex]
+                              \inferrule*[Left=\kw{ABS}]{\typerule {\Gamma, \overline{x : T}^n} \Sigma {e} {t_2} {\epsilon_2}}
+                              {\typerule \Gamma \Sigma {\abs x T n e}  {(\funt T n {\kw{\epsilon_2}} t_2)} {\epsilon}}\ \ \ \ \ \ \ \ \ \ \ 
+                                                            \inferrule*[Left=\kw{APP}]{\typerule \Gamma \Sigma {e} {(\funt T n {\kw{\epsilon}} t)} {\epsilon} \wedge \typerule {\Gamma} {\Sigma} {\overline{e'}} {\overline{T}} {\epsilon}}
+                              {\typerule \Gamma \Sigma {\app {e} {e'} n} {t} {\epsilon}}\\[2ex]
   \end{array}
  \]
 %\end{mdframed}
  \caption{Typing rules for expressions.}\label{fig:exp-typesystem}
 \end{figure}
+
+
+
+
+ 
