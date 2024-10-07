@@ -10,6 +10,7 @@
 
 -R proofs koka_coq
 
+proofs/compiler/koka_clight_compiler.v
 proofs/lib/Coqlib.v
 proofs/lib/Maps.v
 proofs/lib/Zbits.v
@@ -17,3 +18,4 @@ proofs/lib/Integers.v
 proofs/common/AST.v
 proofs/lang/types.v
 proofs/lang/expr.v
+proofs/lang/extraction.v
