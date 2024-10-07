@@ -20,4 +20,4 @@ main.pdf: $(SRC) $(BACKLINK)
 clean:
 	$(LATEXMK) -c main
 	$(RM) -r $(OUT)
-	$(RM) 'main.pdf' 'main.dvi' 'main.log' 'main.out' 'main.synctex.gz' 'main.aux'
+	$(RM) 'main.dvi' 'main.log' 'main.out' 'main.synctex.gz' 'main.aux'

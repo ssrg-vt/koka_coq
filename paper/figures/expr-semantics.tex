@@ -5,19 +5,18 @@
 \begin{array}{@{}c@{}}
    \inferrule*[left=\kw{SVAR}]{s_\kvm = \kvm \wedge \kvm(x) = v}{\eval s x s v} \ \ \ \ \ \
       \inferrule*[left=\kw{SCONST}]{~}{\eval s c s c}\\[2ex]
-      \inferrule{~}{\eval s {\addr l T} s {\addr l T}}\ \ \ \ \ \ \
+      \inferrule*[left=\kw{SLOC}]{~}{\eval s {\addr l T} s {\addr l T}}\ \ \ \ \ \ \
       
        \inferrule*[left=\kw{SALLOC}]{\eval s e s' e'}{\eval s {\alloc e T} s' {\alloc {e'} T}}\\[2ex]
        \inferrule*[left=\kw{SALLOCV}]{fresh(l) \wedge s_\Theta = \Theta \wedge \kheap[l \leftarrow v] = \kheap' \wedge s' = (\kheap', s_\kvm)}{\eval s {\alloc v T}s' {\addr l T}}\\[2ex]
        
        \inferrule*[left=\kw{SDEREF}]{\eval s e s' e'}{\eval s {\deref e T} s' {\deref {e'} T}}\ \ \ \ \ \
-       \inferrule*[left=\kw{SDEREFV}]{s_\Theta = \Theta  \wedge \kheap[l] = v}{\eval s {\deref {(\addr l T)} T} s v}\\[2ex]
-       \inferrule*[left=\kw{SRUN}]{~}{\eval s {\run {\hpe \kheap e}} s e} \ \ \ \ \ \
-       
-       \inferrule*[left=\kw{SMEMU1}]{\eval s {e_1} s' {e_1'}}{\eval s {\eass {e_1} {e_2}} s' {\eass {e_1'} {e_2}}} \\[2ex]
-       \inferrule*[left=\kw{SMEMU2}]{\eval s {e_2} s' {e_2'}}{\eval s {\eass {v} {e_2}} s' {\eass {v} {e_2'}}}\ \ \ \ \ \
+       \inferrule*[left=\kw{SDEREFV}]{s_\Theta = \Theta  \wedge \kheap[l] = v}{\eval s {\deref {(\addr l T)} T} s v}\\[2ex]      
+       \inferrule*[left=\kw{SMEMU1}]{\eval s {e_1} s' {e_1'}}{\eval s {\eass {e_1} {e_2}} s' {\eass {e_1'} {e_2}}}\ \ \ \ \ \
+       \inferrule*[left=\kw{SMEMU2}]{\eval s {e_2} s' {e_2'}}{\eval s {\eass {{\addr {l} {T}}} {e_2}} s' {\eass {\addr {l} {T}} {e_2'}}}\\[2ex]
        \inferrule*[left=\kw{SMEMUV}]{s_\Theta = \Theta \wedge \Theta[l \leftarrow v] = \Theta' \wedge s' = (\Theta', s_\Pi)}
-       {\eval s {\eass {\addr l T} {v}} s' {\kunit}}\\[2ex]
+       {\eval s {\eass {\addr l T} {v}} s' {\kunit}}\ \ \ \ \ \
+        \inferrule*[left=\kw{SRUN}]{~}{\eval s {\run {\hpe \kheap e}} s e}\\[2ex]
        \inferrule*[left=\kw{SHEAP1}]{\eval s {e} s' {e'}}{\eval s {\hpe \kheap {\deref e T}} s' {\hpe \kheap {\deref e' T}}}\ \ \ \ \ \
        \inferrule*[left=\kw{SHEAP2}]{s_\Theta = \Theta  \wedge \kheap[l] = v}{\eval s {\hpe \kheap {\deref {\addr l T} T}} s v} \\[2ex]
 
