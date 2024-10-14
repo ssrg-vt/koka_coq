@@ -29,7 +29,7 @@ Inductive expr : Type :=
 | Lexpr : ident -> type -> expr -> expr -> expr           (* let binding *)
 | Cond : expr -> expr -> expr -> expr                     (* if e then e else e *)
 with heap : Type := 
-| H : list (ident * expr) -> heap.
+| H : list (ident * expr) -> heap.                        (* ident represents memory location here *)
 
 Scheme expr_heap_rec := Induction for expr Sort Set
  with heap_expr_rec := Induction for heap Sort Set.
@@ -67,7 +67,7 @@ Inductive values: list expr -> Prop :=
           values es ->
           values (e :: es).
 
-Definition vmap := list (ident * expr).
+Definition vmap := list (ident * expr).  (* ident represents the temporary variables/registers *)
 
 Fixpoint get (l : list (ident * expr)) (k : ident) : option expr :=
 match l with 
