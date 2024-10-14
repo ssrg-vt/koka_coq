@@ -4,8 +4,8 @@ Require Import Coq.FSets.FSetProperties Coq.FSets.FMapFacts FMaps FSetAVL Nat Pe
 Require Import Coq.Arith.EqNat Coq.ZArith.Int Integers AST.
 
 Inductive effect_label : Type :=
-| Exn : effect_label               (* exception effect *)
-| Div : effect_label               (* divergence effect *)
+| Panic : effect_label               (* exception effect *)
+| Divergence : effect_label               (* divergence effect *)
 | Hst : ident -> effect_label      (* heap effect *).
 
 Inductive effect : Type :=
@@ -33,8 +33,8 @@ Inductive type : Type :=
 (* Equality on types *)
 Definition eq_effect_label (e1 e2 : effect_label) : bool :=
 match e1, e2 with 
-| Exn, Exn => true 
-| Div, Div => true 
+| Panic, Panic => true 
+| Divergence, Divergence => true 
 | Hst id1, Hst id2 => (id1 =? id2)%positive
 | _, _ => false
 end.

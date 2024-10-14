@@ -8,75 +8,96 @@ Inductive constant : Type :=
 | ConsBool : bool -> constant
 | ConsUnit : constant.
 
+Inductive uop : Type :=
+| Not : uop
+| Incr : uop 
+| Decr : uop
+| Sizeof : uop
+| Neg : uop.
+
+Inductive bop : Type :=
+| Plus : bop 
+| Minus : bop
+| Mult : bop
+| Div : bop
+| Eq : bop 
+| Neq : bop 
+| Lt : bop
+| Lte : bop
+| Gt : bop
+| Gte : bop. 
+
+Inductive val : Type :=
+| Vunit : val
+| Vint : Z -> val
+| Vbool : bool -> val
+| Vloc : nat -> val.
+
+Definition vals := list val.
+
+Definition loc := positive. 
+
+Definition heap := list (loc * val).
+
+Definition vmap := list (ident * val).
+
+Fixpoint update_heap (h : heap) (k : loc) (v : val) : heap := 
+match h with 
+| nil => [:: (k, v)]
+| h :: t => if (k =? h.1)%positive then (k, v) :: t else h :: update_heap t k v
+end.
+
+Fixpoint update_vmap (h : vmap) (k : ident) (v : val) : vmap := 
+match h with 
+| nil => [:: (k, v)]
+| h :: t => if (k =? h.1)%positive then (k, v) :: t else h :: update_vmap t k v
+end.
+
+Fixpoint get_val_loc (h : heap) (k : loc) : option val :=
+match h with 
+| nil => None 
+| v :: vm => if (k =? v.1)%positive then Some v.2 else get_val_loc vm k
+end.
+
+Fixpoint get_val_var (h : vmap) (k : ident) : option val :=
+match h with 
+| nil => None 
+| v :: vm => if (k =? v.1)%positive then Some v.2 else get_val_var vm k
+end.
+
+Inductive builtin : Type :=
+| Ref : builtin              (* allocation : ref t e allocates e of type t 
+                                and returns the fresh address *)
+| Deref : builtin            (* dereference : deref t e returns the value of type t 
+                                present at location e *)
+| Massgn : builtin           (* assign value at a location l (l := e) 
+                                assigns the evaluation of e to the reference cell l *)
+| Run : heap -> builtin      (* eliminate heap effect : [r1-> v1, ..., ern->vn] e 
+                                reduces to e captures the essence of state isolation 
+                                and reduces to a value discarding the heap *)
+| Uop : uop -> builtin       (* unary operator *)
+| Bop : bop -> builtin       (* binary operator *)
+| Extfun : builtin.          (* external function *)
+
 (* The source language never exposes the heap binding construct hpφ.e directly to the user 
    but during evaluation the reductions on heap operations create heaps and use them. *)
 Inductive expr : Type :=
 | Var : type -> ident -> expr                             (* variable *)
 | Const : constant -> expr                                (* constant *)
-| Abs : nat -> list (ident * type) -> expr -> expr        (* f(x1,.., xn) = e *)
-| App : expr -> nat -> list expr -> expr                  (* e en *)
-| Addr : basic_type -> ident -> expr                      (* address *)
-| Ref : basic_type -> expr -> expr                        (* allocation : ref t e allocates e of type t 
-                                                             and returns the fresh address *)
-| Deref : basic_type -> expr -> expr                      (* dereference : deref t e returns the value of type t 
-                                                             present at location e *)
-| Massgn : expr -> expr -> expr                           (* assign value at a location l (l := e) 
-                                                             assigns the evaluation of e to the reference cell l *)
-| Run : expr -> expr                                      (* eliminate heap effect : [r1-> v1, ..., ern->vn] e 
-                                                             reduces to e captures the essence of state isolation 
-                                                             and reduces to a value discarding the heap *)
-| Hexpr : heap -> expr -> expr                            (* heap effect *) 
+| App : expr -> nat -> list type -> list expr -> expr     (* function application *)
+| Bfun : builtin -> list type -> list expr -> expr        (* builtin functions *)
 | Lexpr : ident -> type -> expr -> expr -> expr           (* let binding *)
 | Cond : expr -> expr -> expr -> expr                     (* if e then e else e *)
-with heap : Type := 
-| H : list (ident * expr) -> heap.                        (* ident represents memory location here *)
+(* not intended to be written by programmers:*)
+| Addr : basic_type -> loc -> expr                        (* address *)
+| Hexpr : heap -> expr -> expr                            (* heap effect *).
 
-Scheme expr_heap_rec := Induction for expr Sort Set
- with heap_expr_rec := Induction for heap Sort Set.
+Inductive declaration : Type :=
+| TAlias : ident -> type -> declaration
+| Gval : ident -> constant -> declaration
+| Fdecl : ident -> list (ident * type) -> expr -> declaration.
 
-Fixpoint update_ident_expr (h : list (ident * expr)) (k : ident) (v : expr) : list (ident * expr) := 
-match h with 
-| nil => [:: (k, v)]
-| h :: t => if (k =? h.1)%positive then (k, v) :: t else h :: update_ident_expr t k v
-end.
-
-Definition update_heap (h : heap) (k : ident) (v : expr) : heap :=
-match h with 
-| H hm => H (update_ident_expr hm k v)
-end.
-
-(* A value is either:
-- a constant
-- an abstraction : as there is no rule for reduction for abstraction ;
-- a memory location
-*)
-
-(* Values *)
-Inductive value: expr -> Prop :=
-| Vconst : forall c,
-           value (Const c)
-| Vabs : forall n xt e,
-         value (Abs n xt e)
-| Vaddr : forall t l,
-         value (Addr t l).
-
-Inductive values: list expr -> Prop :=
-| Vnil : values nil
-| Vcons : forall e es,
-          value e ->
-          values es ->
-          values (e :: es).
-
-Definition vmap := list (ident * expr).  (* ident represents the temporary variables/registers *)
-
-Fixpoint get (l : list (ident * expr)) (k : ident) : option expr :=
-match l with 
-| nil => None 
-| v :: vm => if (k =? v.1)%positive then Some v.2 else get vm k
-end.
-
-Definition update_vmap (vm : vmap) (k : ident) (v : expr) : vmap :=
-(update_ident_expr vm k v).
+Definition genv := list (loc * declaration).
 
 Section FTVS.
 
@@ -101,8 +122,8 @@ end.
 
 Definition free_variables_effect_label (ef : effect_label) : list ident :=
 match ef with 
-| Exn => nil 
-| Div => nil 
+| Panic => nil 
+| Divergence => nil
 | Hst h => [::h]
 end.
 
@@ -123,7 +144,7 @@ Definition free_variables_store_context (Sigma : store_context) : list ident := 
 Definition ftv (Gamma : ty_context) (Sigma : store_context) (t : type) (ef : effect) : list ident :=
 free_variables_ty_context Gamma ++ free_variables_store_context Sigma ++ free_variables_type t ++ free_variables_effect ef.
 
-(* Typing Rules *)
+(* Typing Rules 
 Inductive ty_expr : ty_context -> store_context -> expr -> type -> effect -> Type :=
 (* Since the variable and constant evaluation produces no effect, 
    we are free to assume any arbitrary effect *)
@@ -185,7 +206,7 @@ with ty_exprs : ty_context -> store_context -> list expr -> list type -> effect 
 
 
 Scheme ty_expr_exprs_rec := Induction for ty_expr Sort Prop
- with ty_exprs_expr_rec := Induction for ty_exprs Sort Prop.
+ with ty_exprs_expr_rec := Induction for ty_exprs Sort Prop.*)
 
 
 (* State is made from heap and virtual map (registers to values) *)
@@ -225,16 +246,12 @@ Fixpoint subst (x:ident) (e':expr) (e:expr) : expr :=
 match e with
 | Var t y => if (x =? y)%positive then e' else e
 | Const c => Const c
-| Abs n xs e => if (mem x (unzip1 xs)) then Abs n xs e else Abs n xs (subst x e' e)
-| App e n es => App (subst x e' e) n (substs subst x e' es)
-| Addr t y => Addr t y (* FIX ME *)
-| Ref t e => Ref t (subst x e' e)
-| Deref t e => Deref t (subst x e' e)
-| Massgn e1 e2 => Massgn (subst x e' e1) (subst x e' e2)
-| Run e => Run (subst x e' e)
-| Hexpr h e => Hexpr h (subst x e' e)
-| Lexpr y t e1 e2 => if (x =? y)%positive then Lexpr y t e1 e2 else Lexpr y t e1 (subst x e' e2) (* FIX ME *)
+| App e n ts es => App (subst x e' e) n ts (substs subst x e' es)
+| Bfun b ts es => Bfun b ts (substs subst x e' es)
+| Lexpr y t e1 e2 => if (x =? y)%positive then Lexpr y t e1 e2 else Lexpr y t e1 (subst x e' e2)
 | Cond e1 e2 e3 => Cond (subst x e' e1) (subst x e' e2) (subst x e' e3)
+| Addr t l => Addr t l 
+| Hexpr h e => Hexpr h (subst x e' e)
 end.
 
 (* Substitution of multiple variables *)
@@ -247,22 +264,22 @@ match xs with
              end
 end.
 
-Definition domain_heap (h : heap) : list ident :=
-match h with 
-| H hm => unzip1 hm
-end. 
+Definition domain_heap (h : heap) := unzip1 h.
 
 (* Operational Semantics *)
-Inductive sem_expr : state -> expr -> state -> expr -> Prop :=
-| sem_var : forall st x t vm v,
+Inductive sem_expr : genv -> state -> expr -> state -> val -> Prop :=
+| sem_var : forall ge st x t vm v,
             value v ->
             get_vmap st = vm ->
-            get vm x = Some v ->
-            sem_expr st (Var t x) st v
-| sem_const : forall st c,
-              value (Const c) ->
-              sem_expr st (Const c) st (Const c)
-| sem_app_abs : forall st n1 xs e n2 vs,
+            get_val_var vm x = Some v ->
+            sem_expr ge st (Var t x) st v
+| sem_const_int : forall ge st i,
+                  sem_expr ge st (Const (ConsInt i)) st (Vint i)
+| sem_const_bool : forall ge st b,
+                   sem_expr ge st (Const (ConsBool b)) st (Vbool b)
+| sem_const_uint : forall ge st,
+                   sem_expr ge st (Const (ConsUnit)) st (Vunit).
+(*| sem_app_abs : forall st n1 xs e n2 vs,
                 values vs ->
                 n1 = n2 ->
                 sem_expr st (App (Abs n1 xs e) n2 vs) st (substs_multi (unzip1 xs) vs e)
@@ -355,7 +372,7 @@ with sem_exprs : state -> list expr -> state -> list expr -> Prop :=
 | sem_cons : forall st e es st' e' st'' es',
              sem_expr st e st' e' ->
              sem_exprs st' es st'' es' ->
-             sem_exprs st (e :: es') st'' (e' :: es'). 
+             sem_exprs st (e :: es') st'' (e' :: es'). *)
 
 
             

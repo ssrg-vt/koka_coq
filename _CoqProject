@@ -10,7 +10,6 @@
 
 -R proofs koka_coq
 
-proofs/compiler/koka_clight_compiler.v
 proofs/lib/Coqlib.v
 proofs/lib/Maps.v
 proofs/lib/Zbits.v

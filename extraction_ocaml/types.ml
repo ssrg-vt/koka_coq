@@ -54,8 +54,8 @@ module Pos =
 type ident = positive
 
 type effect_label =
-| Exn
-| Div
+| Panic
+| Divergence
 | Hst of ident
 
 type effect =
@@ -83,12 +83,12 @@ type type0 =
 
 let eq_effect_label e1 e2 =
   match e1 with
-  | Exn -> (match e2 with
-            | Exn -> true
-            | _ -> false)
-  | Div -> (match e2 with
-            | Div -> true
-            | _ -> false)
+  | Panic -> (match e2 with
+              | Panic -> true
+              | _ -> false)
+  | Divergence -> (match e2 with
+                   | Divergence -> true
+                   | _ -> false)
   | Hst id1 -> (match e2 with
                 | Hst id2 -> Pos.eqb id1 id2
                 | _ -> false)

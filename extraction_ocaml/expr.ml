@@ -18,8 +18,8 @@ type z =
 type ident = positive
 
 type effect_label =
-| Exn
-| Div
+| Panic
+| Divergence
 | Hst of ident
 
 type effect =
@@ -48,18 +48,50 @@ type constant =
 | ConsBool of bool
 | ConsUnit
 
+type uop =
+| Not
+| Incr
+| Decr
+| Sizeof
+| Neg
+
+type bop =
+| Plus
+| Minus
+| Mult
+| Div
+| Eq
+| Neq
+| Lt
+| Lte
+| Gt
+| Gte
+
+type val0 =
+| Vunit
+| Vint of z
+| Vbool of bool
+| Vloc of nat
+
+type loc = positive
+
+type heap = (loc * val0) list
+
+type builtin =
+| Ref
+| Deref
+| Massgn
+| Run of heap
+| Uop of uop
+| Bop of bop
+| Extfun
+
 type expr =
 | Var of type0 * ident
 | Const of constant
-| Abs of nat * (ident * type0) list * expr
-| App of expr * nat * expr list
-| Addr of basic_type * ident
-| Ref of basic_type * expr
-| Deref of basic_type * expr
-| Massgn of expr * expr
-| Run of expr
-| Hexpr of heap * expr
+| App of expr * nat * type0 list * expr list
+| Bfun of builtin * type0 list * expr list
 | Lexpr of ident * type0 * expr * expr
 | Cond of expr * expr * expr
-and heap =
-| H of (ident * expr) list
+| Addr of basic_type * loc
+| Hexpr of heap * expr

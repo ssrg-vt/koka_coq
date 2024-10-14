@@ -2,7 +2,8 @@ From Coq Require ExtrOcamlBasic.
 From Coq Require ExtrOcamlNativeString.
 From Coq Require ExtrOCamlInt63.
 
-Require koka_clight_compiler.
+(** This module is meant as the minimal dependency of extracted code. *)
+Require expr.
 
 Extraction "extraction_ocaml/expr.ml" expr.expr. 
 Extraction "extraction_ocaml/types.ml" types.type.
