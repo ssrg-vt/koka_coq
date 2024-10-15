@@ -1,7 +1,8 @@
-From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype div ssralg seq.
 Require Import String ZArith Coq.FSets.FMapAVL Coq.Structures.OrderedTypeEx.
 Require Import Coq.FSets.FSetProperties Coq.FSets.FMapFacts FMaps FSetAVL Nat PeanoNat.
-Require Import Coq.Arith.EqNat Coq.ZArith.Int Integers AST.
+Require Import Coq.Arith.EqNat Coq.ZArith.Int.
+
+Definition ident := positive.
 
 Inductive effect_label : Type :=
 | Panic : effect_label               (* exception effect *)
@@ -109,42 +110,41 @@ Definition store_context := list (ident * basic_type).
 Fixpoint remove_var_ty (t : ty_context) (k : ident) (T : type) : ty_context :=
 match t with 
 | nil => nil 
-| x :: xs => if ((k =? x.1)%positive && (eq_type T x.2)) then xs else x :: remove_var_ty xs k T
+| x :: xs => if (k =? fst(x))%positive && (eq_type T (snd(x))) then xs else x :: remove_var_ty xs k T
 end.
 
 Fixpoint is_mem (k : ident) (t : ty_context) : bool :=
 match t with 
 | nil => false
-| x :: xs => if (k =? x.1)%positive then true else is_mem k xs
+| x :: xs => if (k =? fst(x))%positive then true else is_mem k xs
 end.
 
 Fixpoint extend_context (t : ty_context) (k : ident) (v : type) : ty_context := 
 match t with 
-| nil => [:: (k, v)]
-| h :: t => if (k =? h.1)%positive then (k, v) :: t else h :: extend_context t k v
+| nil => ((k, v) :: nil)
+| h :: t => if (k =? fst(h))%positive then (k, v) :: t else h :: extend_context t k v
 end. 
 
 Fixpoint append_context (t1 : ty_context) (t2 : ty_context) : ty_context :=
 match t2 with 
 | nil => t1
-| h :: t =>  append_context (extend_context t1 h.1 h.2) t
+| h :: t =>  append_context (extend_context t1 (fst(h)) (snd(h))) t
 end.
 
 Fixpoint get_ty (t : ty_context) (k : ident) : option type :=
 match t with 
 | nil => None 
-| x :: xs => if (x.1 =? k)%positive then Some x.2 else get_ty xs k
+| x :: xs => if (fst(x) =? k)%positive then Some (snd(x)) else get_ty xs k
 end.
 
 Fixpoint extend_contexts (t : ty_context) (ks : list (ident * type)) : ty_context := 
 match ks with 
 | nil => t
-| k :: ks => extend_contexts (extend_context t k.1 k.2) ks
+| k :: ks => extend_contexts (extend_context t (fst(k)) (snd(k))) ks
 end. 
 
 Fixpoint get_sty (t : store_context) (k : ident) : option basic_type :=
 match t with 
 | nil => None 
-| x :: xs => if (x.1 =? k)%positive then Some x.2 else get_sty xs k
+| x :: xs => if (fst(x) =? k)%positive then Some (snd(x)) else get_sty xs k
 end.
-

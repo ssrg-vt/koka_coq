@@ -1,7 +1,7 @@
-From mathcomp Require Import ssreflect ssrfun ssrbool ssrnat eqtype div ssralg seq.
 Require Import String ZArith Coq.FSets.FMapAVL Coq.Structures.OrderedTypeEx.
 Require Import Coq.FSets.FSetProperties Coq.FSets.FMapFacts FMaps FSetAVL Nat PeanoNat.
-Require Import Coq.Arith.EqNat Coq.ZArith.Int Integers AST types Maps.
+Require Import Coq.Arith.EqNat Coq.ZArith.Int.
+Require Import types.
 
 Inductive constant : Type :=
 | ConsInt : Z -> constant
@@ -43,26 +43,26 @@ Definition vmap := list (ident * val).
 
 Fixpoint update_heap (h : heap) (k : loc) (v : val) : heap := 
 match h with 
-| nil => [:: (k, v)]
-| h :: t => if (k =? h.1)%positive then (k, v) :: t else h :: update_heap t k v
+| nil => (k, v) :: nil
+| h :: t => if (k =? fst(h))%positive then (k, v) :: t else h :: update_heap t k v
 end.
 
 Fixpoint update_vmap (h : vmap) (k : ident) (v : val) : vmap := 
 match h with 
-| nil => [:: (k, v)]
-| h :: t => if (k =? h.1)%positive then (k, v) :: t else h :: update_vmap t k v
+| nil => (k, v) :: nil
+| h :: t => if (k =? fst(h))%positive then (k, v) :: t else h :: update_vmap t k v
 end.
 
 Fixpoint get_val_loc (h : heap) (k : loc) : option val :=
 match h with 
 | nil => None 
-| v :: vm => if (k =? v.1)%positive then Some v.2 else get_val_loc vm k
+| v :: vm => if (k =? fst(v))%positive then Some (snd(v)) else get_val_loc vm k
 end.
 
 Fixpoint get_val_var (h : vmap) (k : ident) : option val :=
 match h with 
 | nil => None 
-| v :: vm => if (k =? v.1)%positive then Some v.2 else get_val_var vm k
+| v :: vm => if (k =? fst(v))%positive then Some (snd(v)) else get_val_var vm k
 end.
 
 Inductive builtin : Type :=
@@ -105,7 +105,7 @@ Variable free_variables_type : type -> list ident.
 
 Fixpoint free_variables_types (ts : list type) : list ident :=
 match ts with 
-| nil => [::]
+| nil => nil
 | t :: ts => free_variables_type t ++ (free_variables_types ts)
 end.
 
@@ -116,7 +116,7 @@ Fixpoint free_variables_type (t : type) : list ident :=
 match t with 
 | Btype t => nil
 | Ftype ts n ef t => free_variables_types free_variables_type ts ++ free_variables_type t
-| Reftype h t => [:: h]
+| Reftype h t => h :: nil
 | Ptype n ts => free_variables_types free_variables_type ts
 end.
 
@@ -124,7 +124,7 @@ Definition free_variables_effect_label (ef : effect_label) : list ident :=
 match ef with 
 | Panic => nil 
 | Divergence => nil
-| Hst h => [::h]
+| Hst h => h :: nil
 end.
 
 Fixpoint free_variables_effect (ef : effect) : list ident :=
@@ -132,7 +132,7 @@ match ef with
 | Empty => nil 
 | Esingle el => free_variables_effect_label el 
 | Erow ef ef' => free_variables_effect ef ++ free_variables_effect ef' 
-| Evar h => [:: h]
+| Evar h => h :: nil
 end.
 
 (* For now, we take it as empty but once we introduce polymorphism the free variables needs to be tracked to ensure 
@@ -264,12 +264,15 @@ match xs with
              end
 end.
 
-Definition domain_heap (h : heap) := unzip1 h.
+Fixpoint domain_heap (h : heap) : list loc :=
+match h with 
+| nil => nil
+| x :: h => fst(x) :: domain_heap h
+end.
 
 (* Operational Semantics *)
 Inductive sem_expr : genv -> state -> expr -> state -> val -> Prop :=
 | sem_var : forall ge st x t vm v,
-            value v ->
             get_vmap st = vm ->
             get_val_var vm x = Some v ->
             sem_expr ge st (Var t x) st v
@@ -373,7 +376,3 @@ with sem_exprs : state -> list expr -> state -> list expr -> Prop :=
              sem_expr st e st' e' ->
              sem_exprs st' es st'' es' ->
              sem_exprs st (e :: es') st'' (e' :: es'). *)
-
-
-            
-            
